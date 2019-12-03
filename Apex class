@@ -1,0 +1,32 @@
+public class AttachOfOpportunity {
+    
+    @AuraEnabled
+    public static List<ContentDocumentLink> getAllFiles(string oppId){
+        List<ContentDocumentLink> cdlList = [SELECT ContentDocument.Title, ContentDocument.LastModifiedDate, ContentDocument.FileExtension, ContentDocument.Owner.Name 
+                                             from ContentDocumentLink where LinkedEntityId = :oppId];
+        return cdlList;
+    }
+    @AuraEnabled
+    public static User getUser(){
+        
+        User u = [select id, name ,IsPDFVisible__c from user where id =: Userinfo.getUserId()];
+        return u;
+    }
+    @AuraEnabled
+    public static List<ContentDocumentLink> getAllFilesExceptPDF(string exceptPdfOppId){
+        
+        List<ContentDocumentLink> cdlListExceptPDF = [SELECT ContentDocument.Title, ContentDocument.LastModifiedDate, ContentDocument.FileExtension, ContentDocument.Owner.Name 
+                                             from ContentDocumentLink where ContentDocument.FileExtension != 'PDF' and LinkedEntityId =:exceptPdfOppId];
+        return cdlListExceptPDF;
+    }
+    @AuraEnabled
+    public static List<ContentDocumentLink> deletedFileById(String docId, string oppId){
+        set<id> opportID  = new Set<id>();
+        
+        List<ContentDocumentLink> cdlDeleteList = [SELECT ContentDocument.Title, ContentDocument.LastModifiedDate, ContentDocument.FileExtension, ContentDocument.Owner.Name 
+                                             from ContentDocumentLink where LinkedEntityId = :oppId and ContentDocumentID =:docId];
+       delete cdlDeleteList;
+ 	   return cdlDeleteList;
+    }
+   
+}
