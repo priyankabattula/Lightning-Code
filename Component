@@ -1,0 +1,66 @@
+<aura:component controller ="AttachOfOpportunity" implements="force:lightningQuickAction,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    
+    <aura:if isTrue = "{!v.isLightning}">
+    <c:uploadFile oppId ="{!v.recordId}"/><br/>
+     <aura:set attribute="else">
+         <c:uploadFile oppId ="{!v.opportunityId}"/><br/>
+        </aura:set>
+    </aura:if>
+    <aura:registerEvent name="editRecord" type="force:editRecord"/>
+
+    <aura:attribute name="opportunityId" type="String"/>
+    <aura:attribute name="attchList" type="Object[]"/>
+    <aura:attribute name="attachListExceptPDF" type="List"/>
+    <aura:attribute name="OppIdExceptAttchPDF" type="id"/>
+    <aura:attribute name="user" type="user"/>
+    <aura:attribute name="editDocId" type="id"/>
+    <aura:attribute name="viewDocId" type="id"/>
+    <aura:attribute name="isEdit" type="boolean"/>
+	<aura:attribute name="isView" type="boolean"/>
+    <aura:attribute name="isLightning" type="boolean" default ="false"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <table class="slds-table slds-table--bordered slds-table--striped slds-table--cell-buffer slds-table--fixed-layout">
+        <thead>
+            <tr class="slds-text-heading--label">
+                <th scope="col"><div class="slds-truncate" title="Title">Title</div></th>
+                <th scope="col"><div class="slds-truncate" title="Last Modified">Last Modified</div></th>
+                <th scope="col"><div class="slds-truncate" title="Owner">Owner</div></th>
+                <th scope="col"><div class="slds-truncate" title="File Extension">File Extension</div></th>
+            </tr>
+        </thead>
+        <tbody>
+            <aura:if isTrue="{!v.user.IsPDFVisible__c}">
+                <aura:iteration items="{!v.attchList}" var ="x">
+                    <tr>
+                        <th scope="row"><div class="slds-truncate" title=""><a href="{!'/sfc/servlet.shepherd/document/download/'+ x.ContentDocument.Id}"  target="_blank">{!x.ContentDocument.Title}</a></div></th>                       
+                        <td><div class="slds-truncate" title="">{!x.ContentDocument.LastModifiedDate}</div></td>
+                        <td><div class="slds-truncate" title="">{!x.ContentDocument.Owner.Name}</div></td>
+                        <td><div class="slds-truncate" title="">{!x.ContentDocument.FileExtension}</div></td>
+                        <td>
+                            <button type="button" onclick="{!c.doEdit}" id="{!x.ContentDocument.Id}">Edit</button>
+                            <button type="button" onclick="{!c.doView}" id="{!x.ContentDocument.Id}">View</button>
+                            <button type="button" onclick="{!c.doDelete}" id="{!x.ContentDocument.Id}">Del</button>
+                        </td>
+                    </tr>
+                </aura:iteration>  
+                <aura:set attribute="else">
+                    <aura:iteration items="{!v.attachListExceptPDF}" var ="y">
+                        <tr>
+                            <th scope="row"><div class="slds-truncate" title=""><a href="{!'/sfc/servlet.shepherd/document/download/'+ y.ContentDocument.Id}"  target="_blank">{!y.ContentDocument.Title}</a></div></th>
+                            <td><div class="slds-truncate" title="">{!y.ContentDocument.LastModifiedDate}</div></td>
+                            <td><div class="slds-truncate" title="">{!y.ContentDocument.Owner.Name}</div></td>
+                            <td><div class="slds-truncate" title="">{!y.ContentDocument.FileExtension}</div></td>
+                            <td>
+                            <button type="button" onclick="{!c.doEdit}" id="{!y.ContentDocument.Id}">Edit</button>
+                            <button type="button" onclick="{!c.doView}" id="{!y.ContentDocument.Id}">View</button>
+                            <button type="button" onclick="{!c.doDelete}" id="{!y.ContentDocument.Id}">Del</button>
+                        </td>
+                        </tr>
+                    </aura:iteration>
+                </aura:set>
+            </aura:if> 
+        </tbody>
+    </table>
+</aura:component>
